@@ -29,7 +29,7 @@ From the `/backend` directory, set up your environment:
 python -m venv venv
 
 # Activate virtual environment (Windows PowerShell)
-.\venv\Scripts\Activate.ps1
+.\venv\Scripts\Activate
 
 # Install requirements
 pip install -r requirements.txt

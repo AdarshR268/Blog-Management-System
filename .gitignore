@@ -1,0 +1,14 @@
+# Virtual Environment
+
+backend/__pycache__/
+backend/*/__pycache__/
+*.pyc
+
+
+
+# Logs and IDEs
+*.log
+logs/
+.vscode/
+.idea/
+.DS_Store

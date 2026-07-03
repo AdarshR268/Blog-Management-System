@@ -15,9 +15,13 @@ export const PostDetail = () => {
   
   const [commentText, setCommentText] = useState("");
   const [submittingComment, setSubmittingComment] = useState(false);
+  const [editingCommentId, setEditingCommentId] = useState(null);
+  const [editingText, setEditingText] = useState("");
+  const [savingCommentId, setSavingCommentId] = useState(null);
 
-  const API = process.env.REACT_APP_API_URL;
+  const API = "http://127.0.0.1:8000";
 
+  useEffect(() => {
   const fetchPostAndComments = async () => {
     setLoading(true);
     setError(null);
@@ -46,7 +50,7 @@ export const PostDetail = () => {
     }
   };
 
-  useEffect(() => {
+  
     fetchPostAndComments();
   }, [id]);
 
@@ -93,6 +97,33 @@ export const PostDetail = () => {
       setComments(comments.filter(c => c.id !== commentId));
     } catch (err) {
       alert(err.message);
+    }
+  };
+
+  const handleUpdateComment = async (commentId) => {
+    if (!editingText.trim()) return;
+
+    setSavingCommentId(commentId);
+    try {
+      const response = await fetch(`${API}/api/comments/${commentId}/`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Token ${token}`
+        },
+        body: JSON.stringify({ content: editingText })
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to update comment.');
+      }
+      setComments(comments.map(c => c.id === commentId ? { ...c, content: data.content } : c));
+      setEditingCommentId(null);
+      setEditingText("");
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      setSavingCommentId(null);
     }
   };
 
@@ -240,8 +271,18 @@ export const PostDetail = () => {
                     </div>
                   </div>
 
-                  {user && comment.author === user.id && (
+                  {user && comment.author === user.id && editingCommentId !== comment.id && (
                     <div className="comment-actions">
+                      <button 
+                        onClick={() => {
+                          setEditingCommentId(comment.id);
+                          setEditingText(comment.content);
+                        }} 
+                        className="btn-comment-action"
+                        title="Edit Comment"
+                      >
+                        <Edit size={14} />
+                      </button>
                       <button 
                         onClick={() => handleDeleteComment(comment.id)} 
                         className="btn-comment-action text-error"
@@ -253,7 +294,40 @@ export const PostDetail = () => {
                   )}
                 </div>
                 <div className="comment-node-body">
-                  <p className="comment-text">{comment.content}</p>
+                  {editingCommentId === comment.id ? (
+                    <div className="comment-edit-wrapper" style={{ marginTop: '8px' }}>
+                      <textarea
+                        className="comment-textarea"
+                        value={editingText}
+                        onChange={(e) => setEditingText(e.target.value)}
+                        disabled={savingCommentId === comment.id}
+                        style={{ minHeight: '80px', marginBottom: '8px' }}
+                      />
+                      <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                        <button
+                          onClick={() => {
+                            setEditingCommentId(null);
+                            setEditingText("");
+                          }}
+                          className="btn btn-outline"
+                          style={{ padding: '6px 12px', fontSize: '12px' }}
+                          disabled={savingCommentId === comment.id}
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          onClick={() => handleUpdateComment(comment.id)}
+                          className="btn btn-primary"
+                          style={{ padding: '6px 12px', fontSize: '12px' }}
+                          disabled={savingCommentId === comment.id || !editingText.trim()}
+                        >
+                          {savingCommentId === comment.id ? 'Saving...' : 'Save'}
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="comment-text">{comment.content}</p>
+                  )}
                 </div>
               </div>
             ))

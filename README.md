@@ -6,7 +6,7 @@ A responsive, high-performance blog management platform. The application consist
 
 ## 🛠️ Technology Stack
 * **Backend**: Django & Django REST Framework (DRF)
-* **Frontend**: React (Vite), Vanilla CSS, Lucide Icons
+* **Frontend**: React (Vite), Vanilla CSS
 * **Database**: SQLite (Local file-based)
 
 ---

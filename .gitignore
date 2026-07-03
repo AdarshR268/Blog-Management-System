@@ -1,9 +1,8 @@
 # Virtual Environment
-
 backend/__pycache__/
 backend/*/__pycache__/
 *.pyc
-
+db.sqlite3
 
 
 # Logs and IDEs

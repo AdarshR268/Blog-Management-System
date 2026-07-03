@@ -2,7 +2,11 @@
 backend/__pycache__/
 backend/*/__pycache__/
 *.pyc
+
+
+# SQLite database
 db.sqlite3
+*.sqlite3
 
 
 # Logs and IDEs
